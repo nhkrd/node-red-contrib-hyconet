@@ -1,0 +1,215 @@
+<!--
+node-red plugin for hyconet.js
+-->
+<script type="text/javascript">
+	var icon_color = '#ffbbcf';
+	var icon_color_2 = '#88ffaa';
+	var icon_color_3 = '#bbbbff';
+	var icon_color_4 = '#ccddff';
+
+	var funcs = [
+		{ "name": "search", "category": 'HyConet', "icon": "watch.png", "color": icon_color },
+		{ "name": "select", "category": 'HyConet', "icon": "mouse.png", "color": icon_color },
+		{ "name": "directselect", "category": 'HyConet', "icon": "mouse.png", "color": icon_color },
+		{ "name": "getDialAppInfoURL", "category": 'HyConet', "icon": "function.png", "color": icon_color },
+		{ "name": "getDialAppInfo", "category": 'HyConet', "icon": "function.png", "color": icon_color },
+		{ "name": "getDeviceList", "category": 'HyConet', "icon": "function.png", "color": icon_color },
+		{ "name": "getDeviceListInfo", "category": 'HyConet', "icon": "function.png", "color": icon_color },
+
+		{ "name": "getMedia", "category": 'HyConet', "icon": "function.png", "color": icon_color_3 },
+		{ "name": "getChannels", "category": 'HyConet', "icon": "function.png", "color": icon_color_3 },
+		{ "name": "getReceiverStatus", "category": 'HyConet', "icon": "function.png", "color": icon_color_3 },
+
+		{ "name": "startAITControlledApp", "category": 'HyConet', "icon": "function.png", "color": icon_color_3 },
+		{ "name": "getTaskStatus", "category": 'HyConet', "icon": "function.png", "color": icon_color_3 },
+
+		{ "name": "connws", "category": 'HyConet', "icon": "function.png", "color": icon_color_4 },
+		{ "name": "sendws", "category": 'HyConet', "icon": "function.png", "color": icon_color_4 }
+	];
+
+	for( var i=0; i<funcs.length; i++ ) {
+		RED.nodes.registerType( funcs[i].name ,{
+			category: funcs[i].category,
+			color: funcs[i].color,
+			defaults: {
+				name: {value:""}
+			},
+			inputs:1,
+			outputs:1,
+			icon: funcs[i].icon,
+			label: function() {
+				return this.name||funcs[i].name;
+			}
+		});
+	}
+	
+	RED.nodes.registerType('recvws',{
+		category: 'HyConet',
+		color: icon_color_4,
+		defaults: {
+			name: {value:"recvws"}
+		},
+		inputs:0,
+		outputs:2,
+		outputLabels: ["text", "url"],
+		icon: "arrow-in.png",
+		label: function() {
+			return this.name||"recvws";
+		}
+	});
+</script>
+
+<!--
+--------------------------------------------------------------------------------------------------
+-->
+<script type="text/x-red" data-template-name="search">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="search">
+	<p>同一ネットワーク内の機器探索</p>
+</script>
+
+<script type="text/x-red" data-template-name="select">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="select">
+	<p>機器選択</p>
+</script>
+
+<script type="text/x-red" data-template-name="directselect">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="directselect">
+	<p>機器選択(直接指定)</p>
+</script>
+
+<script type="text/x-red" data-template-name="getDialAppInfoURL">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getDialAppInfoURL">
+	<p>取得先URL</p>
+</script>
+
+<script type="text/x-red" data-template-name="getDialAppInfo">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getDialAppInfo">
+	<p>ハイコネプロトコル情報</p>
+</script>
+
+<script type="text/x-red" data-template-name="getDeviceList">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getDeviceList">
+	<p>デバイス一覧取得</p>
+</script>
+
+<script type="text/x-red" data-template-name="getDeviceListInfo">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getDeviceListInfo">
+	<p>デバイス情報取得()</p>
+</script>
+
+<script type="text/x-red" data-template-name="getMedia">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getMedia">
+	<p>メディア情報取得</p>
+</script>
+
+<script type="text/x-red" data-template-name="getChannels">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getChannels">
+	<p>チャンネル情報取得</p>
+</script>
+
+<script type="text/x-red" data-template-name="getReceiverStatus">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getReceiverStatus">
+	<p>受信機状態の取得</p>
+</script>
+
+
+<script type="text/x-red" data-template-name="startAITControlledApp">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="startAITControlledApp">
+	<p>選局指定|アプリ起動</p>
+</script>
+
+<script type="text/x-red" data-template-name="getTaskStatus">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="getTaskStatus">
+	<p>起動アプリケーション可否情報の取得</p>
+</script>
+
+<script type="text/x-red" data-template-name="connws">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="connws">
+	<p>Webscoket接続</p>
+</script>
+
+<script type="text/x-red" data-template-name="sendws">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="sendws">
+	<p>Webscoket送信</p>
+</script>
+
+<script type="text/x-red" data-template-name="recvws">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+</script>
+<script type="text/x-red" data-help-name="recvws">
+	<p>Webscoket受信</p>
+</script>
+

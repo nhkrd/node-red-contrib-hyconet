@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="https://origami-build.ft.com/v2/bundles/css?modules=o-grid@^4.0.0" />
+<title>HC Protocol Test for hyconet.js</title>
+<style>
+body {
+	background-color: #fafafa;
+	font-size: 1.0em;
+	padding: 0px;
+	margin: 0px;
+}
+.o-grid-container {
+	padding-left: 4px;
+	padding-right:4px;
+}
+
+.maintitle {
+	margin: 5px 0px 0px 0px;
+	color: #000000;
+	font-size: 1.4em;
+	font-weight: bold;
+	text-align: center;
+}
+.subtitle {
+	margin: 10px 0px 0px 0px;
+	color: #ff0000;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
+.subsubtitle {
+	font-weight: bold;
+}
+
+.sheet {
+	margin: 0px border 0px; padding: 0px;
+	background-color: #f4fff4;
+}
+#pininput , #profile_input, #ipaddr_input, #appurl_input, #uuid_input, #locurl_input{
+	width: 80%;
+	font-size: 1.1em;
+}
+
+button, select, div {
+	font-size: 1.0em;
+	max-width: 100%;
+}
+button, select {
+	background-color: #d0d0ff;
+}
+.info, #devinfo, #tvsel, #openstatus {
+	word-wrap: break-word;
+}
+.itemarea {
+	border: 1px solid #000000;
+	margin: 1px;
+}
+.channelPad {
+	margin: 2px 0px;
+	background-color: #a0d0f0;
+}
+</style>
+</head>
+<body>
+<div class="o-grid-container">
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" class="maintitle">HC Protocol Test for hyconet.js</div>
+	</div>
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" class="subtitle">エミュレータ環境依存API</div>
+	</div>
+	<div class="sheet">
+	<div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">デバイス探索</div>
+		<div data-o-grid-colspan="3"><button type="button" onclick="search();">Search</button></div><div data-o-grid-colspan="9"></div>
+		<div data-o-grid-colspan="2">Devs:</div><div data-o-grid-colspan="10"><span id="devinfo"></span></div>
+		<div data-o-grid-colspan="12" class="itemarea"><form name="devform">
+			<div data-o-grid-colspan="12" class="subsubtitle">デバイス選択＆接続</div>
+			<div data-o-grid-colspan="10"><select id="devlist" name="devlist" size="5"></select></div>
+			<div data-o-grid-colspan="2"><button type="button" onclick="tvsel();">TVSel</button></div>
+			<div data-o-grid-colspan="12"></div>
+			<div data-o-grid-colspan="2">Dev:</div><div data-o-grid-colspan="10" id="tvsel"></div>
+			<div data-o-grid-colspan="2">Status:</div><div data-o-grid-colspan="10" id="openstatus"></div>
+		</form></div>
+	</div>
+
+	<form name="devdirect"><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">デバイス選択＆接続(直接指定)</div>
+		<div data-o-grid-colspan="10"><label>Profile:</label><input type="text" name="profile" id="profile_input" size="50" maxlength="50" value="HCXPGeneric"></div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="tvdirectsel();">TVDirectSel</button></div>
+		<div data-o-grid-colspan="12"><label>IPAddr:</label><input type="text" name="ipaddr" id="ipaddr_input" size="50" maxlength="50" value="192.168.1.90"></div>
+		<div data-o-grid-colspan="12"><label>ApplicationURL:</label><input type="text" name="appurl" id="appurl_input" size="50" maxlength="50" value=""></div>
+		<div data-o-grid-colspan="12"><label>uuid:</label><input type="text" name="uuid" id="uuid_input" size="50" maxlength="50" value=""></div>
+		<div data-o-grid-colspan="12"><label>LocationURL:</label><input type="text" name="locurl" id="locurl_input" size="80" maxlength="80" value=""></div>
+		<div data-o-grid-colspan="2">Dev:</div><div data-o-grid-colspan="10" id="tvdirectsel"></div>
+		<div data-o-grid-colspan="2">Status:</div><div data-o-grid-colspan="10" id="opendirectstatus"></div>
+	</div></form>
+
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">ハイコネAPI情報取得用URLの取得</div>
+		<div data-o-grid-colspan="10">API:getDialAppInfoURL()</div><div data-o-grid-colspan="2"><button type="button" onclick="getDialAppInfoURL();">Get</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="appstatusurl" class="info"></div>
+	</div></form>
+
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">ハイコネAPI情報取得</div>
+		<div data-o-grid-colspan="10">API:getDialAppInfo()</div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="getDialAppInfo();">Get</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="appstatus" class="info"></div>
+	</div></form>
+
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" class="subtitle">端末連携拡張プロトコル</div>
+	</div>
+
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" class="subtitle">コマンド関連</div>
+	</div>
+	<div class="sheet">
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">メディア利用可否情報取得</div>
+		<div data-o-grid-colspan="10">API:getAvailableMediaFromHostDevice()</div>
+		<div data-o-grid-colspan="2"><button type=button onclick="getAvailableMediaFromHostDevice();">Get</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="mediainfo" class="info"></div>
+	</div></form>
+
+	<form name="chform"><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">編成チャンネル情報一覧</div>
+		<div data-o-grid-colspan="12">API:getChannelInfoFromHostDevice()</div>
+		<div data-o-grid-colspan="6"><select id="medialist" name="medialist" size="4">
+			<option value="ALL" >ALL</option>
+			<option value="TD" selected >TD</option>
+			<option value="BS" >BS</option>
+			<option value="CS" >CS</option>
+		</select></div>
+		<div data-o-grid-colspan="6"><button type="button" onclick="getChannelInfoFromHostDevice();">Get</button></div>
+<!--		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="channelinfo" class="info"></div> -->
+		<div data-o-grid-colspan="12">選局ボタン</div>
+		<div data-o-grid-colspan="1"></div><div id="chpad" data-o-grid-colspan="10"></div><div data-o-grid-colspan="1"></div>
+	</div></form>
+
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">受信機情報取得</div>
+		<div data-o-grid-colspan="10">API:getReceiverStatusFromHostDevice()</div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="getReceiverStatusFromHostDevice();">Get</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="receiverinfo" class="info"></div>
+	</div></form>
+
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">アプリ起動要求(Tune)</div>
+		<div data-o-grid-colspan="10">API:startAITControlledAppToHostDevice()</div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="startAITControlledAppToHostDevice( 'tune', 32736, 32736, 1024, 0 );">Post</button></div>
+		<div data-o-grid-colspan="2">Mode:</div><div data-o-grid-colspan="10" id="appmode_tune" class="info"></div>
+		<div data-o-grid-colspan="2">App:</div><div data-o-grid-colspan="10" id="appapp_tune" class="info"></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="appinfo_tune" class="info"></div>
+	</div></form>
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">HCアプリ起動要求(app)</div>
+		<div data-o-grid-colspan="12">API:startAITControlledAppToHostDevice()</div>
+
+<!--		<div data-o-grid-colspan="4"><button type="button" onclick="startAITControlledAppToHostDevice( 'app', 32736, 32736, 1024, 1 );">Post GTV</button></div>-->
+		<div data-o-grid-colspan="4"><button type="button" onclick="startAITControlledAppToHostDevice( 'app', 32737, 32737, 1032, 1 );">Post GTV</button></div>
+
+		<div data-o-grid-colspan="4"><button type="button" onclick="startAITControlledAppToHostDevice( 'app', 32737, 32737, 1032, 2 );">Post ETV</button></div>
+		<div data-o-grid-colspan="4"><button type="button" onclick="startAITControlledAppToHostDevice( 'app', 32737, 32737, 1034, 3 );">Post BBB</button></div>
+		<div data-o-grid-colspan="2">Mode:</div><div data-o-grid-colspan="10" id="appmode_app" class="info"></div>
+		<div data-o-grid-colspan="2">App:</div><div data-o-grid-colspan="10" id="appapp_app" class="info"></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="appinfo_app" class="info"></div>
+	</div></form>
+
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">HCアプリ起動可否状態取得</div>
+		<div data-o-grid-colspan="10">API:getTaskStatusFromHostDevice()</div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="getTaskStatusFromHostDevice();">Get</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="applaunchinfo" class="info"></div>
+	</div></form>
+	</div>
+
+	<div class="o-grid-row">
+		<div data-o-grid-colspan="12" class="subtitle">Websocket通信</div>
+	</div>
+	<div class="sheet">
+	<form><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">Websocket接続</div>
+		<div data-o-grid-colspan="10">API:connWebsocket()</div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="connWebsocket();">Conn</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="connWebsocket" class="info"></div>
+		<div class="o-grid-row itemarea">
+			<div data-o-grid-colspan="12" class="subsubtitle">受信メッセージ:</div>
+			<div data-o-grid-colspan="1"></div><div data-o-grid-colspan="11"><span id="log"></span></div>
+		</div>
+	</div></form>
+
+	<form id="message"><div class="o-grid-row itemarea">
+		<div data-o-grid-colspan="12" class="subsubtitle">メッセージ送信</div>
+		<div data-o-grid-colspan="9">API:sendWebsocket()</div>
+		<div data-o-grid-colspan="10"><label>Text:</label><input name="message" size="20"></div>
+		<div data-o-grid-colspan="2"><button type="button" onclick="sendMessage();">Send</button></div>
+		<div data-o-grid-colspan="2">Res:</div><div data-o-grid-colspan="10" id="sendWebsocket" class="info"></div>
+	</div></form>
+	</div>
+	<!--<div style="padding:20px 0px;"></div>-->
+</div>
+<script src="hcnode.js"></script>
+<script >
+function search() {
+	var devinfo = document.getElementById("devinfo");
+	devinfo.innerHTML = "[探索中]";
+	var domDevlist = document.getElementById("devlist");
+	domDevlist.innerHTML = "";
+
+	setTimeout( function() {
+		window.appLauncher.searchDevices().then( function( status ) {
+			var devinfo = document.getElementById("devinfo");
+			devinfo.innerHTML = status.body;
+			var domDevlist = document.getElementById("devlist");
+			domDevlist.innerHTML = "";
+			var devlist = JSON.parse(status.body);
+			for( var i=0; i<devlist.length; i++ ) {
+				var opt = document.createElement("option");
+				opt.innerHTML = devlist[i].ipaddr + ":" + devlist[i].friendlyName ;
+				opt.setAttribute("value", devlist[i].ipaddr + ":" + devlist[i].friendlyName);
+				if(i==0) {
+					opt.setAttribute("selected", "selected");
+				}
+				domDevlist.appendChild(opt);
+			}	
+		});
+	}, 200);
+}
+
+function tvsel() {
+	var num = document.devform.devlist.selectedIndex;
+	var str = document.devform.devlist.options[num].value;
+	document.getElementById("tvsel").innerHTML = str; 
+
+	setTimeout( function() {
+		window.appLauncher.setDevice( str.split(":")[0] ).then(function(res) {
+			var openS = document.getElementById("openstatus");
+			openS.innerHTML = JSON.stringify(res);
+		});
+	}, 100);
+}
+
+function tvdirectsel() {
+	var profile = document.devdirect.profile.value;
+	var ipaddr = document.devdirect.ipaddr.value;
+	var appurl = document.devdirect.appurl.value;
+	var uuid = document.devdirect.uuid.value;
+	var locurl = document.devdirect.locurl.value;
+
+	document.getElementById("tvdirectsel").innerHTML = profile + " " + ipaddr;
+
+	setTimeout( function() {
+		window.appLauncher.setDeviceDirect( profile, ipaddr, appurl, uuid, locurl ).then(function(res) {
+			var openS = document.getElementById("opendirectstatus");
+			openS.innerHTML = JSON.stringify(res);
+		});
+	}, 100);
+}
+
+
+
+function getDialAppInfoURL() {
+	window.appLauncher.getDialAppInfoURL(true).then(function(data) {
+		document.getElementById("appstatusurl").innerHTML = JSON.stringify(data); 
+	});
+}
+function getDialAppInfo() {
+	window.appLauncher.getDialAppInfo(true).then(function(data) {
+		document.getElementById("appstatus").innerHTML = JSON.stringify(data); 
+	});
+}
+
+function getAvailableMediaFromHostDevice() {
+	window.appLauncher.getAvailableMediaFromHostDevice(true).then(function cb(data) {
+		var mediainfo = document.getElementById("mediainfo");
+		mediainfo.innerHTML = JSON.stringify(data);
+	});
+}
+
+function getChannelInfoFromHostDevice() {
+	var num = document.chform.medialist.selectedIndex;
+	var media = document.chform.medialist.options[num].value;
+	window.appLauncher.getChannelInfoFromHostDevice(media, true).then(function(data) {
+
+		//channel PAD
+		var chpad = document.getElementById("chpad");
+		var media = data["body"]["media"];
+
+		chpad.innerHTML = "";
+		for( var i=0; i<media.length ;i++ ) {
+			var type  = media[i]["type"];
+			var channels  = media[i]["channels"];
+
+			for( var j=0; j<channels.length ;j++ ) {
+				var chnum  = channels[j]["logical_channel_number"];
+				var chname = channels[j]["broadcast_channel_name"];
+				var nwid = channels[j]["resource"]["original_network_id"];
+				var tsid = channels[j]["resource"]["transport_stream_id"];
+				var svid = channels[j]["resource"]["service_id"];
+				var label = type + ":" + chnum + " " + chname;
+	//			var btn = '<button type=button onclick="getChannelInfoFromHostDevice(' + nwid + ',' + tsid + ',' + svid + ');">' + label + '</button>';
+
+//				var div = document.createElement('div'); 
+//				div.setAttribute( "data-o-grid-colspan" , "1" );
+//				chpad.appendChild( div );
+
+				var btn = document.createElement('button'); 
+				btn.type = "button";
+				btn.value = nwid + ',' + tsid + ',' + svid;
+				btn.innerText = label;
+				btn.onclick = call_startAITControlledAppToHostDevice;
+				btn.setAttribute( "data-o-grid-colspan" , "12" );
+				btn.classList.add('channelPad');
+
+				chpad.appendChild( btn );
+			}
+		}
+	});
+}
+
+function getReceiverStatusFromHostDevice() {
+	window.appLauncher.getReceiverStatusFromHostDevice().then(function cb(data) {
+		var mediainfo = document.getElementById("receiverinfo");
+		mediainfo.innerHTML = JSON.stringify(data);
+	});
+}
+
+function call_startAITControlledAppToHostDevice( ) {
+	var ids = this.value.split(",");
+	
+	startAITControlledAppToHostDevice( "tune", parseInt(ids[0]), parseInt(ids[1]), parseInt(ids[2]), 0 );
+}
+function startAITControlledAppToHostDevice( mode, nwid, tsid, svid, aitidx ) {
+	var ait = [
+		"http://127.0.0.1:8887/ait/sample_gtv.ait",
+		"http://127.0.0.1:8887/ait/sample_etv.ait"
+	];
+
+	var app  = {
+		"resource": {
+			"original_network_id": nwid,
+			"transport_stream_id": tsid,
+			"service_id": svid
+		},
+		"hybridcast": {
+			"orgid": 1,
+			"appid": 1,
+			"aiturl": ait[aitidx]
+		}
+	};
+
+	var appmode = document.getElementById("appmode" + "_" + mode);
+	appmode.innerHTML = mode;
+	var appapp = document.getElementById("appapp" + "_" + mode);
+	appapp.innerHTML = JSON.stringify(app);
+
+	setTimeout( function() {
+		window.appLauncher.startAITControlledAppToHostDevice(mode, app).then(function cb(data) {
+			var appinfo = document.getElementById("appinfo" + "_" + mode);
+			appinfo.innerHTML = JSON.stringify(data);
+		});
+	}, 200 );
+}
+
+function getTaskStatusFromHostDevice() {
+	window.appLauncher.getTaskStatusFromHostDevice().then(function cb(data) {
+		var mediainfo = document.getElementById("applaunchinfo");
+		mediainfo.innerHTML = JSON.stringify(data);
+	});
+}
+
+//
+//Websocket
+//
+function sendMessage() {
+	var message = document.forms.message.message.value;
+
+	var sendTextToHostDevice = {
+		"message": {
+			"devid": "devid",
+			"sendTextToHostDevice": {
+				"text": ""
+			}
+		}
+	};
+
+	sendTextToHostDevice["message"]["device"] = "toTV";
+	sendTextToHostDevice["message"]["sendTextToHostDevice"]["text"] = message ;
+	window.appLauncher.sendWebsocket( message ).then(function cb(data) {
+		var sendwsinfo = document.getElementById("sendWebsocket");
+		sendwsinfo.innerHTML = JSON.stringify(data);
+	});
+}
+
+function connWebsocket() {
+	window.appLauncher.connWebsocket().then(function cb(data) {
+		var connwsinfo = document.getElementById("connWebsocket");
+		connwsinfo.innerHTML = JSON.stringify(data);
+	});
+}
+</script>
+</body>

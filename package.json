@@ -1,0 +1,19 @@
+{
+  "name": "node-red-contrib-hyconet",
+  "version": "0.1.0",
+  "description": "Node-RED extra node plugin for hyconet.js",
+  "node-red": {
+    "nodes": {
+      "hclib": "node-red-contrib-hyconet.js"
+    }
+  },
+  "main": "node-red-contrib-hyconet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "NHKSTRL",
+  "license": "MIT",
+  "dependencies": {
+    "hyconet.js": "git+https://github.com/nhkrd/hyconet.js.git"
+  }
+}

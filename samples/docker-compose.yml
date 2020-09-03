@@ -1,0 +1,12 @@
+version: '3'
+services:
+    nodered:
+        image: hyconet-nodered
+        container_name: 'hyconet-nodered'
+        build:
+            context: ./
+        ports:
+            - '1880:1880'
+        volumes:
+            - .:/data
+        network_mode: "host"
